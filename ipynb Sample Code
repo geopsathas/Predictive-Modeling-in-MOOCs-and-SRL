@@ -1,0 +1,61 @@
+//This is a sample code thas was used on the dataset for predictive modelling to identify at risk students in MOOCs
+import numpy as np
+import pandas as pd
+import seaborn as sn
+import scipy.stats as stats
+from statsmodels.graphics.gofplots import qqplot
+import matplotlib.pyplot as plt
+
+df = pd.read_excel('MOOC34_Clean.xlsx', usecols="A:B, BB:BP, DO, IC, IE:IG")
+df.columns
+
+df.info()
+df.shape  # view dimensions of dataset
+#df.dtypes #variables type
+
+#df=df.dropna(subset=['Intro SRL', 'Outro SRL'])   #Keep only learners (control group) who answered both Intro and OUTRO SRL questionnaires
+df=df.dropna(subset=['Intro SRL'])   #Keep only Baseline learners (control group, "subgroup"=1) who answered Intro SRL questionnaire
+df.shape
+
+#df=df.dropna(subset=['Ποιός είναι ο πιο βασικός λόγος συμμετοχής σας στο μάθημα;'])
+#df.shape
+df=df.loc[df['Subgroup'] == 1]  #Keep the control (baseline) group
+df.shape
+
+df.head
+
+
+# view frequency counts of values (levels) in categorical variables
+# https://www.kaggle.com/prashant111/naive-bayes-classifier-in-python 
+
+for var in [   
+       'Συμμετοχή στις δραστηριότητες chat', 'STARTED', 'DROPOUT', 'Φύλο',
+       'Ηλικία', 'Είστε εργαζόμενος/η;', 'Σπουδές',
+       'Ποια η πρότερη εμπειρία σας σε Μαζικά Ανοικτά Διαδικτυακά Μαθήματα (MOOCs);',
+       'Προηγούμενη εμπειρία σε κάποια γλώσσα προγραμματισμού;',
+       'Προηγούμενη εμπειρία σε Python',
+       'Πόσο συχνά χρησιμοποιείτε εργαλεία τύπου chat (συνομιλίας) για επικοινωνία στο διαδίκτυο; (π.χ. Skype, Messenger, Google Hangouts)',
+       'Ποιός είναι ο πιο βασικός λόγος συμμετοχής σας στο μάθημα;',
+       'Ποιο από τα παρακάτω ταιριάζει καλύτερα στον τρόπο που σκοπεύετε να παρακολουθήσετε το μάθημα;',
+       #'Intro SRL', 'Outro SRL', 
+        'Cluster (START)', 'Cluster (AFTER)',
+       'Subgroup']: 
+    print(var, ' contains ', len(df[var].unique()), ' labels')    # ΣΥΧΝΟΤΗΤΕΣ κάθε τιμής κατηγορικής μεταβλητής
+    print(df[var].unique())
+
+......
+
+#Import scikit-learn metrics module for accuracy calculation
+from sklearn import metrics
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+
+#print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+print(f"Model Accouracy: {metrics.accuracy_score(y_test, y_pred):0.4f}")  #y_test are the true class labels and y_pred are the predicted class labels in the test-set.
+#print(f"r_value: {res.rvalue:5.5f}, p_value: {res.pvalue:5.5f}")
+
+y_pred_train = model.predict(X_train)
+print(f"Training set accuracy: {metrics.accuracy_score(y_train, y_pred_train):0.4f}") 
+print('Accuracy: %.3f' % accuracy_score(y_test, y_pred))
+print('Precision: %.3f' % precision_score(y_test, y_pred))
+print('Recall: %.3f' % recall_score(y_test, y_pred))
+print('F1 Score: %.3f' % f1_score(y_test, y_pred))
